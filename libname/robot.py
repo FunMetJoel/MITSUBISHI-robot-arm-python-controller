@@ -1,10 +1,11 @@
-from .robot_serial import robotSerial
+from .robot_serial import RobotSerial
+from typing import Union
 
-class robot(robotSerial):
+class Robot(RobotSerial):
     def __init__(self, port:str, baudrate:int=9600, robotSlot:int=1, controllerSlot:int=1) -> None:
         super().__init__(port, baudrate, robotSlot, controllerSlot)
 
-    def servoOn(self, wait:bool = False) -> str|None:
+    def servoOn(self, wait:bool = False) -> Union[str, None]:
         """Turn on the servo of the robot.
 
         Args:
@@ -15,7 +16,7 @@ class robot(robotSerial):
         """
         return self.executeCommand("SERVO ON", wait)
     
-    def servoOff(self, wait:bool = False) -> str|None:
+    def servoOff(self, wait:bool = False) -> Union[str, None]:
         """Turn off the servo of the robot.
 
         Args:

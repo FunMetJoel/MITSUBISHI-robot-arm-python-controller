@@ -1,6 +1,7 @@
 import serial
+from typing import Union
 
-class robotSerial:
+class RobotSerial:
     """Class for communication with the robot controller via serial port.
 
     Args:
@@ -50,7 +51,7 @@ class robotSerial:
         self.send(data)
         return self.ser.read_until(b"\r").decode("utf-8")
     
-    def executeCommand(self, command:str, wait:bool = False) -> str|None:
+    def executeCommand(self, command:str, wait:bool = False) -> Union[str, None]:
         """Execute a command on the robot controller.
 
         Args:

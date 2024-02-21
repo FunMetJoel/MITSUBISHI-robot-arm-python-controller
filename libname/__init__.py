@@ -1,2 +1,2 @@
-from .robot_serial import robotSerial
-from .robot import robot
+from .robot_serial import RobotSerial
+from .robot import Robot
