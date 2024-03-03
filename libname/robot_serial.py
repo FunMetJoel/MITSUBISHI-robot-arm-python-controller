@@ -14,42 +14,51 @@ class RobotSerial:
         self.ser = serial.Serial(port, baudrate)
         self.ser.flushInput()
         self.ser.flushOutput()
+        self.ser.timeout = 5
 
         self.robotSlot = robotSlot
         self.controllerSlot = controllerSlot
+
+    def connect(self) -> None:
+        """Connect to the robot controller."""
+        self.ser.open()
     
     def __enter__(self):
-        self.sendAndWait("GETCNTL") # TODO: check if correct
+        self.sendAndWait("CNTLON") # TODO: check if correct
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.sendAndWait("RELEASECNTL") # TODO: check if correct
+        self.sendAndWait("CNTLOFF") # TODO: check if correct
 
     def __del__(self):
         self.ser.close()
 
-    def send(self, data:str) -> None:
+    def write(self, data:str, wait:bool = False) -> None:
+        """Write data to the robot controller.
+
+        Args:
+            data (str): The data to write.
+            wait (bool, optional): Whether to wait for a response. Defaults to False.
+
+        Returns:
+            str: The response from the robot controller if wait is True, otherwise None.
+        """
+        self.ser.write(str.encode(data))
+        if wait:
+            return self.ser.read_until(b"\r").decode("utf-8")
+
+    def send(self, data:str, wait:bool = False) -> None:
         """Send data to the robot controller.
 
         Args:
             data (str): The data to send.
+            wait (bool, optional): Whether to wait for a response. Defaults to False.
+
+        Returns:
+            str: The response from the robot controller if wait is True, otherwise None.
         """
         prefix = f"{self.robotSlot};{self.controllerSlot};"
         suffix = "\r"
-        self.ser.write(str.encode(prefix + data + suffix))
-
-
-    def sendAndWait(self, data:str) -> str:
-        """Send data to the robot controller and wait for a response.
-
-        Args:
-            data (str): The data to send.
-
-        Returns:
-            str: The response from the robot controller.
-        """
-        
-        self.send(data)
-        return self.ser.read_until(b"\r").decode("utf-8")
+        return self.write((prefix + data + suffix), wait)
     
     def executeCommand(self, command:str, wait:bool = False) -> Union[str, None]:
         """Execute a command on the robot controller.
@@ -62,10 +71,7 @@ class RobotSerial:
             str|None: The response from the robot controller if wait is True, otherwise None.
         """
         prefix = "EXEC"
-        if wait:
-            return self.sendAndWait(prefix + command)
-        else:
-            self.send(prefix + command)
+        return self.send(prefix + command, wait)
 
     def parceResponse(self, response:str) -> str:
         """Parce the response from the robot controller.
