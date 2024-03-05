@@ -21,13 +21,23 @@ class RobotSerial:
 
     def connect(self) -> None:
         """Connect to the robot controller."""
-        self.ser.open()
+        print(self.write("1;1;OPEN=NARCUSR\r", True))
+        print(self.write("3F;3F;7,0;3,5,A,1E,32,46,64;MB4;PRM;RV-3SB;CRn-5xx;MELFA;05-07-14;Ver.K4a;ENG;MAG IK EEN KOEKJE;1;1;8;\r", True))
+        print(self.write("1;1;PARRLNG\r", True))
+        print(self.write("RLNG;1;1\r", True))
+        print(self.write("1;1;PDIRTOP\r", True))
+        print(self.write("1.MB4;4767;24-02-2821:05:14;2;220160;12;;9;82;135256;6848;9661;14\r", True))
+        print(self.write("1;1;PPOSF\r", True))
+        print(self.write("X;176.01;Y;33.14;Z;541.62;A;77.92;B;-25.59;C;106.80;;6,15728640;100;0.00;00000000\r", True))
+        print(self.write("1;1;PARMEXTL\r", True))
+        print(self.write("MEXTL;0.00, 0.00, 0.00, 0.00, 0.00, 0.00;6\r", True))
+        print(self.write("1;1;KEYWDptest\r", True))
     
     def __enter__(self):
-        self.sendAndWait("CNTLON") # TODO: check if correct
+        self.send("CNTLON", True) # TODO: check if correct
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.sendAndWait("CNTLOFF") # TODO: check if correct
+        self.semd("CNTLOFF", True) # TODO: check if correct
 
     def __del__(self):
         self.ser.close()
