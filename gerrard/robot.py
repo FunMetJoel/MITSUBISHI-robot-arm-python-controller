@@ -33,5 +33,30 @@ class Robot(RobotSerial):
         return self.executeCommand(f"ACCEL {accel},{decel}")
     
 
+    def setVariable(self, varName:str, value , wait:bool = True) -> Union[str, None]:
+        """Set the value of a variable in the robot controller.
+
+        Args:
+            varName (str): The name of the variable.
+            value : The value to set.
+            wait (bool, optional): Whether to wait for a response. Defaults to True.
+
+        Returns:
+            str|None: The response from the robot controller if wait is True, otherwise None.
+        """
+        return self.executeCommand(f"J{varName} = {str(value)}", wait)
+
+    def moveTo(self, positionVarialbe:str, wait:bool = True) -> Union[str, None]:
+        """Move to a posiotion variable
+
+        Args:
+            positionVarialbe (str): The name of the position variable
+            wait (bool, optional): Whether to wait for a response. Defaults to False
+
+        Returns:
+            str|None: The response from the robot controller if wait is True, otherwise None.
+        """
+        self.executeCommand(f"MOV J{positionVarialbe}", wait)
+
         
     
