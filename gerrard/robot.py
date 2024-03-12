@@ -28,6 +28,12 @@ class Robot(RobotSerial):
         return self.executeCommand("SERVO OFF", wait)
     
     def setAcceleration(self, accel:int = 100, decel:int = 100) -> None:
+        """Set maximum acceleration and deceleration in percentages
+
+        Args:
+            accel (int, 0 to 100): Maximum acceleration in %
+            decel (int, 0 to 100): Maximum deceleration in %
+        """
         accel = str(accel)
         decel = str(decel)
         return self.executeCommand(f"ACCEL {accel},{decel}")
@@ -58,5 +64,13 @@ class Robot(RobotSerial):
         """
         self.executeCommand(f"MOV J{positionVarialbe}", wait)
 
+    def torqueLimit(self, axisNr:int = 0, limitPercentage:int = 100):
+        """Set maximum torque on specified axis
+        
+        Args:
+            axisNr (int): axis number (1 to 6)
+            limitPercentage (int): maximum torque allowed on specified axis
+        """
+        self.executeCommand(f"TORQ {axisNr},{limitPercentage}")
         
     
