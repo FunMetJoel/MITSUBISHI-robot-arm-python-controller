@@ -1,8 +1,8 @@
 from setuptools import find_packages, setup
 
 setup(
-    name='libname',
-    packages=find_packages(include=['libname']),
+    name='gerrard',
+    packages=find_packages(include=['gerrard']),
     version='0.1.0',
     description='Mitsibushi robotics library',
     author='FunMetJoel',

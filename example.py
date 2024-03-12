@@ -1,4 +1,4 @@
-from libname import *
+from gerrard import *
 import time
 
 newRobotSerial = RobotSerial("/dev/ttyUSB0")
@@ -13,7 +13,8 @@ with newRobotSerial:
     newRobotSerial.executeCommand("JCOSIROP = ( 50.000, 0.000, 0.000, 0.000, 0.000, 0.000)", True)
     newRobotSerial.executeCommand("MOV J_CURR + JCOSIROP", True)
 
-# newRobot = Robot("/dev/ttyACM0")
+newRobot = Robot("/dev/ttyACM0")
+newRobot.servoOff()
 
 # with newRobot:
 #     print(newRobot.servoOn())
