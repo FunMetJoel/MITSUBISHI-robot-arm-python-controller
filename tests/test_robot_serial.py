@@ -19,7 +19,7 @@ def test_send_robot_serial():
 
     with robot_serial:
         # Send a command
-        robot_serial.send('GETCNTL')
+        robot_serial.send('CNTLON')
 
     assert True
 
@@ -35,7 +35,7 @@ def test_send_and_wait_robot_serial():
 
     with robot_serial:
         # Send a command and wait for a response
-        response = robot_serial.sendAndWait('GETCNTL')
+        response = robot_serial.send('CNTLON', True)
 
     assert True
 
@@ -51,6 +51,6 @@ def test_execute_command_robot_serial():
 
     with robot_serial:
         # Execute a command
-        response = robot_serial.executeCommand('GETCNTL', wait=True)
+        response = robot_serial.executeCommand('CNTLON', wait=True)
 
     assert True
