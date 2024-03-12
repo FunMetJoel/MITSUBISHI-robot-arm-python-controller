@@ -10,7 +10,7 @@ with newRobotSerial:
     time.sleep(2)
 
     newRobotSerial.executeCommand("JOVRD 10", True)
-    newRobotSerial.executeCommand("JCOSIROP = ( -50.000, 0.000, 0.000, 0.000, 0.000, 0.000)", True)
+    newRobotSerial.executeCommand("JCOSIROP = ( 50.000, 0.000, 0.000, 0.000, 0.000, 0.000)", True)
     newRobotSerial.executeCommand("MOV J_CURR + JCOSIROP", True)
 
 # newRobot = Robot("/dev/ttyACM0")
