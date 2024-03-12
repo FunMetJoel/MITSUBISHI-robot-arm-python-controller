@@ -11,7 +11,7 @@ class RobotSerial:
         controllerSlot (int): The slot number of the controller. Defaults to 1.
     """
     def __init__ (self, port:str, baudrate:int=9600, robotSlot:int=1, controllerSlot:int=1) -> None:
-        self.ser = serial.Serial(port, baudrate)
+        self.ser = serial.Serial(port, baudrate, stopbits=2, parity="E")
         self.ser.flushInput()
         self.ser.flushOutput()
         self.ser.timeout = 5
@@ -37,7 +37,7 @@ class RobotSerial:
         self.send("CNTLON", True) # TODO: check if correct
 
     def __exit__(self, exc_type, exc_value, traceback):
-        self.semd("CNTLOFF", True) # TODO: check if correct
+        self.send("CNTLOFF", True) # TODO: check if correct
 
     def __del__(self):
         self.ser.close()
