@@ -26,6 +26,12 @@ class Robot(RobotSerial):
             str|None: The response from the robot controller if wait is True, otherwise None.
         """
         return self.executeCommand("SERVO OFF", wait)
+    
+    def setAcceleration(self, accel:int = 100, decel:int = 100) -> None:
+        accel = str(accel)
+        decel = str(decel)
+        return self.executeCommand(f"ACCEL {accel},{decel}")
+    
 
         
     
