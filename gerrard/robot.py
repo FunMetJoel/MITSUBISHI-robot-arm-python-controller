@@ -37,7 +37,15 @@ class Robot(RobotSerial):
         accel = str(accel)
         decel = str(decel)
         return self.executeCommand(f"ACCEL {accel},{decel}")
-    
+        
+    def torqueLimit(self, axisNr:int = 0, limitPercentage:int = 100):
+        """Set maximum torque on specified axis
+        
+        Args:
+            axisNr (int): axis number (1 to 6)
+            limitPercentage (int): maximum torque allowed on specified axis
+        """
+        self.executeCommand(f"TORQ {axisNr},{limitPercentage}")    
 
     def setVariable(self, varName:str, value , wait:bool = True) -> Union[str, None]:
         """Set the value of a variable in the robot controller.
@@ -52,7 +60,7 @@ class Robot(RobotSerial):
         """
         return self.executeCommand(f"J{varName} = {str(value)}", wait)
 
-    def moveTo(self, positionVarialbe:str, wait:bool = True) -> Union[str, None]:
+    def moveTo(self, positionVariable:str, wait:bool = True) -> Union[str, None]:
         """Move to a posiotion variable
 
         Args:
@@ -62,15 +70,14 @@ class Robot(RobotSerial):
         Returns:
             str|None: The response from the robot controller if wait is True, otherwise None.
         """
-        self.executeCommand(f"MOV J{positionVarialbe}", wait)
+        self.executeCommand(f"MOV J{positionVariable}", wait)
 
-    def torqueLimit(self, axisNr:int = 0, limitPercentage:int = 100):
-        """Set maximum torque on specified axis
-        
-        Args:
-            axisNr (int): axis number (1 to 6)
-            limitPercentage (int): maximum torque allowed on specified axis
+    def createPos(self, name:str, jointDeg:lst, other:lst = "(0,0)":
+        """Werkt nog niet, kan uitgecomment worden
         """
-        self.executeCommand(f"TORQ {axisNr},{limitPercentage}")
+        return self.executeCommand(f"DEF POS {name}")
+        
+
+
         
     
