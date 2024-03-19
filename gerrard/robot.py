@@ -1,5 +1,29 @@
 from .robot_serial import RobotSerial
 from typing import Union
+from enum import Enum
+
+class VariableType(Enum):
+    JOINT = "J"
+    POSITION = "P"
+    NUMERIC = "M"
+    CHARACTER = "C"
+
+class RobotVariable:
+    def __init__(self, type:VariableType) -> None:
+        self.type = type
+        self.value = None
+
+    def __set__(self, instance, value):
+        self.value = value
+        instance.setVariable(self.name, value)
+
+    def __get__(self, instance, owner):
+        return self.value
+    
+    def __set_name__(self, owner, name):
+        self.name = name
+        
+
 
 class Robot(RobotSerial):
     def __init__(self, port:str, baudrate:int=9600, robotSlot:int=1, controllerSlot:int=1) -> None:
@@ -72,7 +96,7 @@ class Robot(RobotSerial):
         """
         self.executeCommand(f"MOV J{positionVariable}", wait)
 
-    def createPos(self, name:str, jointDeg:lst, other:lst = "(0,0)":
+    def createPos(self, name:str, jointDeg:lst, other:lst = "(0,0)"):
         """Werkt nog niet, kan uitgecomment worden
         """
         return self.executeCommand(f"DEF POS {name}")
