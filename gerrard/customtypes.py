@@ -1,6 +1,6 @@
+from __future__ import annotations
 from typing import List, Tuple
 from enum import Enum
-from __future__ import annotations
 
 class JointPos:
     def __init__(self, j1:float, j2:float, j3:float, j4:float, j5:float, j6:float) -> None:
@@ -64,6 +64,7 @@ class JointPos:
 
     def __iter__(self):
         return iter([self.j1, self.j2, self.j3, self.j4, self.j5, self.j6])
+    
     
 class AbsPos:
     def __init__(self, x:float, y:float, z:float, a:float, b:float, c:float) -> None:

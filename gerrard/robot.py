@@ -1,5 +1,5 @@
-from .robot_serial import RobotSerial
 from __future__ import annotations
+from .robot_serial import RobotSerial
 from typing import Union, List, Tuple
 from .customtypes import JointPos, AbsPos
             
