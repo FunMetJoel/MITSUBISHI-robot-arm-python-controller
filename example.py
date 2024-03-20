@@ -1,18 +1,27 @@
 from gerrard import *
 import time
+import math
 
-newRobotSerial = Robot("/dev/ttyUSB0")
+newRobot = Robot("/dev/ttyUSB0")
 
-newRobotSerial.connect()
+newRobot.connect()
 
-with newRobotSerial:
-    print(newRobotSerial.executeCommand("SERVO ON", True))
+with newRobot:
+    print(newRobot.executeCommand("SERVO ON", True))
     time.sleep(2)
-    newRobotSerial.setAcceleration(20, 20)
+    
+    pos = [0,90,0,0,0,0]
+    newRobot.setAcceleration(10, 10)
+    while True:
+        Input = input("(a/d)> ").lower()
+        if Input == "a":
+            pos[0] += 10
+        elif Input == "d":
+            pos[0] -= 10
 
-    newRobotSerial.executeCommand("JOVRD 10", True)
-    newRobotSerial.executeCommand("JCOSIROP = ( 10.000, 0.000, 0.000, 0.000, 0.000, 0.000)", True)
-    newRobotSerial.executeCommand("MOV J_CURR + JCOSIROP", True)
+        newRobot.setVariable("NEWPOS", tuple(pos))
+        newRobot.moveTo("NEWPOS")
+        
 
 
 

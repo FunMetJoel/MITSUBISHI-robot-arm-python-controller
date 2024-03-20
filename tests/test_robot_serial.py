@@ -1,7 +1,7 @@
 import pytest
 from unittest import mock
 
-from libname.robot_serial import RobotSerial
+from gerrard import RobotSerial
 
 def test_open_robot_serial():
     mock.patch('serial.Serial', autospec=True).start()

@@ -1,30 +1,8 @@
 from .robot_serial import RobotSerial
-from typing import Union
-from enum import Enum
-
-class VariableType(Enum):
-    JOINT = "J"
-    POSITION = "P"
-    NUMERIC = "M"
-    CHARACTER = "C"
-
-class RobotVariable:
-    def __init__(self, type:VariableType) -> None:
-        self.type = type
-        self.value = None
-
-    def __set__(self, instance, value):
-        self.value = value
-        instance.setVariable(self.name, value)
-
-    def __get__(self, instance, owner):
-        return self.value
-    
-    def __set_name__(self, owner, name):
-        self.name = name
-        
-
-
+from __future__ import annotations
+from typing import Union, List, Tuple
+from .customtypes import JointPos, AbsPos
+            
 class Robot(RobotSerial):
     def __init__(self, port:str, baudrate:int=9600, robotSlot:int=1, controllerSlot:int=1) -> None:
         super().__init__(port, baudrate, robotSlot, controllerSlot)
@@ -71,7 +49,7 @@ class Robot(RobotSerial):
         """
         self.executeCommand(f"TORQ {axisNr},{limitPercentage}")    
 
-    def setVariable(self, varName:str, value , wait:bool = True) -> Union[str, None]:
+    def setVariable(self, varName:str, value, wait:bool = True) -> Union[str, None]:
         """Set the value of a variable in the robot controller.
 
         Args:
@@ -82,7 +60,18 @@ class Robot(RobotSerial):
         Returns:
             str|None: The response from the robot controller if wait is True, otherwise None.
         """
-        return self.executeCommand(f"J{varName} = {str(value)}", wait)
+        if type(value) == JointPos:
+            varType = "J"
+        elif type(value) == AbsPos:
+            varType = "P"
+        elif type(value) == int | type(value) == float:
+            varType = "M"
+        elif type(value) == str:
+            varType = "C"
+        else:
+            raise TypeError(f"Type {type(value)} is not supported")
+        
+        return self.executeCommand(f"{varType}{varName} = {str(value)}", wait)
 
     def moveTo(self, positionVariable:str, wait:bool = True) -> Union[str, None]:
         """Move to a posiotion variable
@@ -96,7 +85,7 @@ class Robot(RobotSerial):
         """
         self.executeCommand(f"MOV J{positionVariable}", wait)
 
-    def createPos(self, name:str, jointDeg:lst, other:lst = "(0,0)"):
+    def createPos(self, name:str, jointDeg:list, other:list = "(0,0)"):
         """Werkt nog niet, kan uitgecomment worden
         """
         return self.executeCommand(f"DEF POS {name}")
