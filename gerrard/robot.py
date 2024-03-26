@@ -95,6 +95,9 @@ class Robot(RobotSerial):
     def overrideSpeed(self, speed:int):
         """Set override speed"""
         return self.executeCommand(f"OVRD {speed}")
+    
+    def end(self):
+        return self.executeCommand("END")
 
         
     
