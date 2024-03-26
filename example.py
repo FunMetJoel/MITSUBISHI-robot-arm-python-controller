@@ -11,13 +11,20 @@ with newRobot:
     time.sleep(2)
     
     pos = [0,90,0,0,0,0]
-    newRobot.setAcceleration(10, 10)
+    newRobot.setVariable("NEWPOS", tuple(pos))
+    newRobot.moveTo("NEWPOS")
+    newRobot.setAcceleration(3, 3)
+    for i in range(6):
+        newRobot.torqueLimit(i+1, 30)
     while True:
         Input = input("(a/d)> ").lower()
         if Input == "a":
             pos[0] += 10
         elif Input == "d":
             pos[0] -= 10
+        elif Input == "r":
+            newRobot.resetError()
+
 
         newRobot.setVariable("NEWPOS", tuple(pos))
         newRobot.moveTo("NEWPOS")

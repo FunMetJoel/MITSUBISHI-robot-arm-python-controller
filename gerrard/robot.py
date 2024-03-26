@@ -60,7 +60,7 @@ class Robot(RobotSerial):
         Returns:
             str|None: The response from the robot controller if wait is True, otherwise None.
         """
-        if type(value) == JointPos:
+        if type(value) == JointPos or type(value) == tuple:
             varType = "J"
         elif type(value) == AbsPos:
             varType = "P"
@@ -84,13 +84,17 @@ class Robot(RobotSerial):
             str|None: The response from the robot controller if wait is True, otherwise None.
         """
         self.executeCommand(f"MOV J{positionVariable}", wait)
+    
+    def resetError(self):
+        self.executeCommand("ERRRESET", True)
 
-    def createPos(self, name:str, jointDeg:list, other:list = "(0,0)"):
-        """Werkt nog niet, kan uitgecomment worden
-        """
-        return self.executeCommand(f"DEF POS {name}")
-        
-
+    def maxSpeed(self, speed:int):
+        """Set maximum movement speed"""
+        return self.executeCommand(f"SPD {speed}")
+    
+    def overrideSpeed(self, speed:int):
+        """Set override speed"""
+        return self.executeCommand(f"OVRD {speed}")
 
         
     
