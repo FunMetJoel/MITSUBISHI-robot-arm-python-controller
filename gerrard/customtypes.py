@@ -67,16 +67,18 @@ class JointPos:
     
     
 class AbsPos:
-    def __init__(self, x:float, y:float, z:float, a:float, b:float, c:float) -> None:
+    def __init__(self, x:float, y:float, z:float, a:float, b:float, c:float, idk1:int=6, idk2:int=0) -> None:
         self.x = x
         self.y = y
         self.z = z
         self.a = a
         self.b = b
         self.c = c
+        self.idk1 = idk1
+        self.idk2 = idk2
 
     def __str__(self) -> str:
-        return f"({self.x},{self.y},{self.z},{self.a},{self.b},{self.c})"
+        return f"({self.x},{self.y},{self.z},{self.a},{self.b},{self.c})({self.idk1},{self.idk2})"
     
     def __add__(self, other:AbsPos) -> AbsPos:
         return AbsPos(self.x + other.x, self.y + other.y, self.z + other.z, self.a + other.a, self.b + other.b, self.c + other.c)

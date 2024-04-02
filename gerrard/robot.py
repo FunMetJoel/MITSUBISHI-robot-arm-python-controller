@@ -73,20 +73,21 @@ class Robot(RobotSerial):
         
         return self.executeCommand(f"{varType}{varName} = {str(value)}", wait)
 
-    def moveTo(self, positionVariable:str, wait:bool = True) -> Union[str, None]:
+    def moveTo(self, positionVariable:str, wait:bool = True, mode:str = "J",) -> Union[str, None]:
         """Move to a posiotion variable
 
         Args:
             positionVarialbe (str): The name of the position variable
+            mode (str): J or P
             wait (bool, optional): Whether to wait for a response. Defaults to False
 
         Returns:
             str|None: The response from the robot controller if wait is True, otherwise None.
         """
-        self.executeCommand(f"MOV J{positionVariable}", wait)
+        self.executeCommand(f"MOV {mode}{positionVariable}", wait)
     
-    def resetError(self):
-        self.executeCommand("ERRRESET", True)
+    def resetError(self, wait:bool = True):
+        return self.send("RSTALARM", wait)
 
     def maxSpeed(self, speed:int):
         """Set maximum movement speed"""
