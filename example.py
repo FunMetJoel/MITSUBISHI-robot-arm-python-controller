@@ -1,7 +1,7 @@
 from gerrard import *
 import time
 import math
-
+#import pyautogui
 
 newRobot = Robot("/dev/ttyUSB0")
 
@@ -9,27 +9,50 @@ newRobot.connect()
 
 with newRobot:
     newRobot.end()
+    newRobot.resetError()
     print(newRobot.executeCommand("SERVO ON", True))
     time.sleep(2)
     
     pos = [0,90,0,0,0,0]
-    newRobot.setAcceleration(10, 10)
-    # #newRobot.overrideSpeed(10)
+    #newRobot.setAcceleration(10, 10)
+    #newRobot.overrideSpeed(100)
+
+    newRobot.executeCommand("SPD M_NSPD", True)
+    #newRobot.executeCommand("M_NSPD", True)
     for i in range(1, 7):
         newRobot.torqueLimit(i, 50)
 
-    print("HALLO")
+    print("Code is gestart!")
 
-    currentPos = AbsPos(500.15,0,638.38,5.05,81.40,4.85)
+    pos1 = AbsPos(377,1,500.38,0,90,0)
+    pos2 = AbsPos(500,0,500.38,0,90,0)
+    pos3 = AbsPos(377,2,500.38,0,90,0)
+    # pos1 = AbsPos(500,200,400.38,0,90,0)
+    # pos2 = AbsPos(500,0,500.38,0,90,0)
+    # pos3 = AbsPos(500,-200,400.38,0,90,0)
 
-    newRobot.setVariable("COSIROP", currentPos, True)
+    pos4 = AbsPos(400,1,500.38,0,90,0)
+    pos5 = AbsPos(500,0,500.38,0,90,0)
+    pos6 = AbsPos(600,0,500.38,0,90,0)
 
-    #newRobot.write("1;1;EXECPCOSIROP=(400.15,0,638.38,5.05,81.40,4.85)(6,0)\r", True)
-    #time.sleep(1)
-    newRobot.moveTo("COSIROP", True, "P")
-    #newRobot.write("1;1;EXECMOV PCOSIROP\r")
-    time.sleep(4)
-    print(newRobot.resetError())
+    
+    newRobot.setVariable("A1", pos4, True)
+    newRobot.setVariable("A2", pos5, True)
+    newRobot.setVariable("A3", pos6, True)
+
+    #newRobot.moveTo("A1", True, "P")
+
+    while True:
+        #newRobot.executeCommand("MVR3 PA1, PA3, PA2 TYPE 0, 1", True)
+        newRobot.executeCommand("MVS PA1", True)
+        time.sleep(1)
+        newRobot.executeCommand("MOV PA3", True)
+        time.sleep(1)
+        # newRobot.executeCommand("MVR PA1, PA2, PA3 ", True)
+        # time.sleep(1)
+        # newRobot.executeCommand("MVR PA3, PA2, PA1", True)
+        # time.sleep(1)
+        #print(newRobot.getPos())
 
 
     # while True:
@@ -54,7 +77,7 @@ with newRobot:
     #     print(newRobot.executeCommand("P1234 = (203.00,368.84,872.01,0.00,44.60,61.10)(7,0)", True))
     #     time.sleep(2)
     #     print(newRobot.executeCommand("MOV P1234", True))
-        #newRobot.moveTo("NEWPOS")
+    #     newRobot.moveTo("NEWPOS")
         
 
 

@@ -87,7 +87,7 @@ class Robot(RobotSerial):
         self.executeCommand(f"MOV {mode}{positionVariable}", wait)
     
     def resetError(self, wait:bool = True):
-        return self.send("RSTALARM", wait)
+        return self.send("RSTALRM", wait)
 
     def maxSpeed(self, speed:int):
         """Set maximum movement speed"""
@@ -99,6 +99,9 @@ class Robot(RobotSerial):
     
     def end(self):
         return self.executeCommand("END")
+    
+    def getPos(self):
+        return self.send("PPOSF", True)
 
         
     
