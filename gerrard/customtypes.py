@@ -67,7 +67,7 @@ class JointPos:
     
     
 class AbsPos:
-    def __init__(self, x:float, y:float, z:float, a:float, b:float, c:float, idk1:int=6, idk2:int=0) -> None:
+    def __init__(self, x:float, y:float, z:float, a:float, b:float, c:float, idk1:int=1, idk2:int=0) -> None:
         self.x = x
         self.y = y
         self.z = z

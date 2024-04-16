@@ -24,30 +24,35 @@ with newRobot:
 
     print("Code is gestart!")
 
-    pos1 = AbsPos(377,1,500.38,0,90,0)
-    pos2 = AbsPos(500,0,500.38,0,90,0)
-    pos3 = AbsPos(377,2,500.38,0,90,0)
+    pos1 = AbsPos(-40,0,950,0,0,-0)
+    #pos2 = AbsPos(500,0,500.38,0,90,0)
+    #pos3 = AbsPos(377,2,500.38,0,90,0)
     # pos1 = AbsPos(500,200,400.38,0,90,0)
     # pos2 = AbsPos(500,0,500.38,0,90,0)
     # pos3 = AbsPos(500,-200,400.38,0,90,0)
 
-    pos4 = AbsPos(400,1,500.38,0,90,0)
-    pos5 = AbsPos(500,0,500.38,0,90,0)
-    pos6 = AbsPos(600,0,500.38,0,90,0)
+    #pos4 = AbsPos(-555.70,72.60,576.22,11.74,35.06,-20.25)
+    #pos5 = AbsPos(-555.70,72.60,576.22,11.74,35.06,-20.25)
+    #pos6 = AbsPos(600,0,500.38,0,90,0)
 
     
-    newRobot.setVariable("A1", pos4, True)
-    newRobot.setVariable("A2", pos5, True)
-    newRobot.setVariable("A3", pos6, True)
+    newRobot.setVariable("A1", pos1, True)
+    #newRobot.setVariable("A2", pos2, True)
+    #newRobot.setVariable("A3", pos6, True)
 
     #newRobot.moveTo("A1", True, "P")
+    newRobot.setVariable("B1", JointPos(90,0,0,0,0,0), True)
+    newRobot.moveTo("B1")
+    time.sleep(1)
+    newRobot.moveTo("A1", True, "P")
 
-    while True:
+    # while True:
+    #     pass
         #newRobot.executeCommand("MVR3 PA1, PA3, PA2 TYPE 0, 1", True)
-        newRobot.executeCommand("MVS PA1", True)
-        time.sleep(1)
-        newRobot.executeCommand("MOV PA3", True)
-        time.sleep(1)
+        # newRobot.executeCommand("MVS PA1", True)
+        # time.sleep(1)
+        # newRobot.executeCommand("MOV PA3", True)
+        # time.sleep(1)
         # newRobot.executeCommand("MVR PA1, PA2, PA3 ", True)
         # time.sleep(1)
         # newRobot.executeCommand("MVR PA3, PA2, PA1", True)
