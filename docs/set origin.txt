@@ -1,0 +1,14 @@
+MITSUBISHI RV-3SB CR2B how to set origin
+
+Teach pendant enabled, controller on 'teach' mode
+
+Teach pendant:
+Move robot to origin position, using visible triangles on each axis
+Press (5.MAINT) > (4.ORIGIN) > (3.TOOL)
+
+(In this menu, you can disable brakes to move the robot when it is not electronically possible.
+Every digit represents 1 axis, starting from axis 1. CAUTION! Needs 2nd person to position the robot by hand)
+
+Fill the "AXIS" line with 1's to set origin.
+
+Party!
