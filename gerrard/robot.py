@@ -102,6 +102,12 @@ class Robot(RobotSerial):
     
     def getPos(self):
         return self.send("PPOSF", True)
+    
+    def MoveCircle(self, start, point1, point2):
+        return self.executeCommand(f"MVC {start},{point1},{point2}")
+    
+    def MoveArc(self, pos1, pos2, pos3):
+        return self.executeCommand(f"MVR {pos1}, {pos2}, {pos3}")
 
         
     

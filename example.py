@@ -15,7 +15,7 @@ with newRobot:
     
     pos = [0,90,0,0,0,0]
     #newRobot.setAcceleration(10, 10)
-    #newRobot.overrideSpeed(100)
+    newRobot.overrideSpeed(100)
 
     newRobot.executeCommand("SPD M_NSPD", True)
     #newRobot.executeCommand("M_NSPD", True)
@@ -23,72 +23,55 @@ with newRobot:
         newRobot.torqueLimit(i, 50)
 
     print("Code is gestart!")
+    #newRobot.setVariable("B1", JointPos(0,0,0,0,0,0), True)
+    #newRobot.moveTo("B1")
 
-    pos1 = AbsPos(-40,0,950,0,0,-0)
-    #pos2 = AbsPos(500,0,500.38,0,90,0)
-    #pos3 = AbsPos(377,2,500.38,0,90,0)
-    # pos1 = AbsPos(500,200,400.38,0,90,0)
-    # pos2 = AbsPos(500,0,500.38,0,90,0)
-    # pos3 = AbsPos(500,-200,400.38,0,90,0)
 
-    #pos4 = AbsPos(-555.70,72.60,576.22,11.74,35.06,-20.25)
-    #pos5 = AbsPos(-555.70,72.60,576.22,11.74,35.06,-20.25)
-    #pos6 = AbsPos(600,0,500.38,0,90,0)
+    # newRobot.setVariable("D1", AbsPos(518, 88, 403, -174, 43, -162))
+    # newRobot.setVariable("D2", AbsPos(470, 255, 636, -151, 80, -123))
+    # newRobot.setVariable("D3", AbsPos(521, -118, 636, -151, 80, -165))
+    newRobot.setVariable("D1", JointPos(90,0,0,0,0,0))
+    # # newRobot.setVariable("D2", JointPos(0,5,0,0,0,0))
+    # # newRobot.setVariable("D3", JointPos(0,90,0,0,0,0))
+    # # newRobot.setVariable("D4", AbsPos(695,0,485,-180,90,180)) #X;695.00;Y;0.00;Z;485.00;A;-180.00;B;90.00;C;180.00;;5,0;100;0.00;00000000
+    # newRobot.setVariable("D5", AbsPos(538,158,566,0,83,14))
+    # newRobot.setVariable("D6", AbsPos(538,235,665,0,83,14))
+    # newRobot.setVariable("D7", AbsPos(538,76,665,0,83,14))
 
+    # newRobot.setVariable("D8", AbsPos(337,-89,716,96,71,0))
+    # newRobot.setVariable("D9", AbsPos(419,-90,590,97,7,0))
+    # newRobot.setVariable("D10", AbsPos(325,-88,744,96,-23,0))
+
+    # newRobot.setVariable("D11", AbsPos(538,158,566,0,83,14))
+    # newRobot.setVariable("D12", AbsPos(538,150,558,0,83,14))
+    # newRobot.setVariable("D13", AbsPos(538,150,574,0,83,14))
+
+    newRobot.setVariable("D14", AbsPos(300,100,416,-176,3,-100))
+    newRobot.setVariable("D15", AbsPos(400,100,416,-90,3,-20))
+    newRobot.setVariable("D16", AbsPos(350,50,416,-176,3,-20))
+    # newRobot.setVariable("D17", AbsPos(192,-33,909,23,-55,129))
+
+    # newRobot.moveTo("D14", mode="P")
+    # time.sleep(2)
+    # newRobot.moveTo("D15", mode="P")
+    # time.sleep(2)
+    # newRobot.moveTo("D16", mode="P")
+    # time.sleep(2)
+    while True:
+        newRobot.MoveArc("PD14", "PD15", "PD16")
+        #newRobot.MoveCircle("PD14", "PD15", "PD16")
+    #newRobot.MoveArc("PD5", "PD6", "PD7")
+    # newRobot.moveTo("D1", mode="J")
+    # time.sleep(3)
+    # newRobot.moveTo("D8", mode="P")
+    # time.sleep(3)
+    # newRobot.moveTo("D9", mode="P")
+    # time.sleep(3)
+    # newRobot.moveTo("D10", mode="P")
+    # newRobot.executeCommand("CMPG 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5")
+    # newRobot.executeCommand("CMP POS, &B111111")
+
+    time.sleep(0.5)
+    newRobot.end()
+    newRobot.resetError()
     
-    newRobot.setVariable("A1", pos1, True)
-    #newRobot.setVariable("A2", pos2, True)
-    #newRobot.setVariable("A3", pos6, True)
-
-    #newRobot.moveTo("A1", True, "P")
-    newRobot.setVariable("B1", JointPos(90,0,0,0,0,0), True)
-    newRobot.moveTo("B1")
-    time.sleep(1)
-    newRobot.moveTo("A1", True, "P")
-
-    # while True:
-    #     pass
-        #newRobot.executeCommand("MVR3 PA1, PA3, PA2 TYPE 0, 1", True)
-        # newRobot.executeCommand("MVS PA1", True)
-        # time.sleep(1)
-        # newRobot.executeCommand("MOV PA3", True)
-        # time.sleep(1)
-        # newRobot.executeCommand("MVR PA1, PA2, PA3 ", True)
-        # time.sleep(1)
-        # newRobot.executeCommand("MVR PA3, PA2, PA1", True)
-        # time.sleep(1)
-        #print(newRobot.getPos())
-
-
-    # while True:
-    #     # print(pyautogui.position(), pos[0], pos[1])
-
-    #     # # Gets scroll wheel input and moves the robot accordingly
-    #     # scrollAmount = pyautogui.scroll()
-
-                
-    #     # pos[0] = 0 + ((pyautogui.position()[0] - 800) / -10)
-    #     # pos[1] = 90 + ((pyautogui.position()[1] - 540) / 10)
-    #     Input = input("(a/d)> ").lower()
-    #     if Input == "a":
-    #         pos[0] += 10
-    #     elif Input == "d":
-    #         pos[0] -= 10
-
-    #     #newRobot.setVariable("NEWPOS", JointPos(pos[0], pos[1], pos[2], pos[3], pos[4], pos[5]))
-            
-    #     # QoKX;179.12;Y;11.94;Z;955.42;A;-0.28;B;30.77;C;1.63;;5,0;100;0.00;0000000
-    #     #newRobot.setVariable("NEWPOS", AbsPos(179, 12, 955, 0, 30, 1))
-    #     print(newRobot.executeCommand("P1234 = (203.00,368.84,872.01,0.00,44.60,61.10)(7,0)", True))
-    #     time.sleep(2)
-    #     print(newRobot.executeCommand("MOV P1234", True))
-    #     newRobot.moveTo("NEWPOS")
-        
-
-
-
-# with newRobot:
-#     print(newRobot.servoOn())
-#     time.sleep(1)
-#     print(newRobot.servoOff())
-
