@@ -14,8 +14,8 @@ with newRobot:
     time.sleep(2)
     
     pos = [0,90,0,0,0,0]
-    #newRobot.setAcceleration(10, 10)
-    newRobot.overrideSpeed(100)
+    newRobot.setAcceleration(3, 3)
+    #newRobot.overrideSpeed(100)
 
     newRobot.executeCommand("SPD M_NSPD", True)
     #newRobot.executeCommand("M_NSPD", True)
@@ -46,9 +46,9 @@ with newRobot:
     # newRobot.setVariable("D12", AbsPos(538,150,558,0,83,14))
     # newRobot.setVariable("D13", AbsPos(538,150,574,0,83,14))
 
-    newRobot.setVariable("D14", AbsPos(300,100,416,-176,3,-100))
-    newRobot.setVariable("D15", AbsPos(400,100,416,-90,3,-20))
-    newRobot.setVariable("D16", AbsPos(350,50,416,-176,3,-20))
+    newRobot.setVariable("D14", AbsPos(300,0,416,180,0,0))
+    newRobot.setVariable("D15", AbsPos(400,0,416,180,0,0))
+    newRobot.setVariable("D16", AbsPos(350,-50,416,180,0,0))
     # newRobot.setVariable("D17", AbsPos(192,-33,909,23,-55,129))
 
     # newRobot.moveTo("D14", mode="P")
@@ -58,8 +58,9 @@ with newRobot:
     # newRobot.moveTo("D16", mode="P")
     # time.sleep(2)
     while True:
-        newRobot.MoveArc("PD14", "PD15", "PD16")
-        #newRobot.MoveCircle("PD14", "PD15", "PD16")
+        newRobot.moveTo("D14", True, "P")
+        #newRobot.MoveArc("PD14", "PD15", "PD16")
+        newRobot.MoveCircle("PD14", "PD15", "PD16")
     #newRobot.MoveArc("PD5", "PD6", "PD7")
     # newRobot.moveTo("D1", mode="J")
     # time.sleep(3)
