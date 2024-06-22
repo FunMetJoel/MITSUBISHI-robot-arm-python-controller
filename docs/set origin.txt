@@ -1,4 +1,15 @@
-MITSUBISHI RV-3SB CR2B how to set origin
+MITSUBISHI RV-3SB CR2B 
+
+---HOW TO RESOLVE ENCODER POSITION LOST---
+
+Replace or recharge memory battery (can be done while controller is either on or off*)
+		*Leave controller on when replacing battery while origin is still correct
+Switch controller off&on
+Set origin
+
+
+
+---HOW TO SET ORIGIN---
 
 Teach pendant enabled, controller on 'teach' mode
 
@@ -7,8 +18,8 @@ Move robot to origin position, using visible triangles on each axis
 Press (5.MAINT) > (4.ORIGIN) > (3.TOOL)
 
 (In this menu, you can disable brakes to move the robot when it is not electronically possible.
-Every digit represents 1 axis, starting from axis 1. CAUTION! Needs 2nd person to position the robot by hand)
+Every digit represents 1 axis, starting from axis 1. CAUTION! Needs 2nd person to position the robot by hand. Operator needs to set which axis to release the brakes on, then press and hold deadman switch & [MOVE] & [+X])
 
-Fill the "AXIS" line with 1's to set origin.
+Fill the "AXIS" line with 1's on every axis digit. (can also be done independently by leaving some axes on 0)
 
 Party!

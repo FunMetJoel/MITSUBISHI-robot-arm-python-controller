@@ -44,7 +44,7 @@ while True:
         if(area > 300): 
             x, y, w, h = cv2.boundingRect(contour) 
             imageFrame = cv2.rectangle(imageFrame, (x, y), 
-                                    (x+w, h+h), 
+                                    (x+w, y+h), 
                                     (0, 0, 255), 2) 
             
             cv2.putText(imageFrame, "Pannenkoek", (x, y), 

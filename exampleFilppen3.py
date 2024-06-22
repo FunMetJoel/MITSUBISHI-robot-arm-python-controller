@@ -45,7 +45,8 @@ with newRobot:
     # for i in range(5):
     while readkey.pressedKeys.count(readkey.keyboard.Key.pause) == 0:
         newRobot.moveTo("F1", True, "P")
-        time.sleep(1)
+        time.sleep(1) 
+        input()
         # newRobot.moveTo("F2", True, "P")
         # time.sleep(1)
 
