@@ -17,7 +17,7 @@ with newRobot:
     time.sleep(2)
     
     #newRobot.setAcceleration(3, 3)
-    newRobot.overrideSpeed(10)
+    newRobot.overrideSpeed(100)
 
     newRobot.executeCommand("SPD M_NSPD", True)
     #newRobot.executeCommand("M_NSPD", True)
@@ -35,11 +35,14 @@ with newRobot:
     newRobot.setVariable("F6", AbsPos(570,0,500,-90,113,180))
     newRobot.setVariable("F7", AbsPos(500,0,500,-90,90,180))
 
+    newRobot.moveTo("F1", True, "P")
+    time.sleep(1) 
+    input()
+
     # for i in range(5):
     while readkey.pressedKeys.count(readkey.keyboard.Key.pause) == 0:
         newRobot.moveTo("F1", True, "P")
         time.sleep(1) 
-        input()
 
         while not computerVision3.detectingPancake():
             print(" Not Detecting Pancake ")
@@ -48,15 +51,18 @@ with newRobot:
         print(computerVision3.afwijking())
         print(f"({computerVision3.pixelsTocm(computerVision3.afwijking()[0])}cm, {computerVision3.pixelsTocm(computerVision3.afwijking()[1])}cm)")
 
-        goedeFlipThreshold = 1
+        goedeFlipThreshold = 2
+
         while computerVision3.absoluteDistance() > goedeFlipThreshold:
+            newRobot.overrideSpeed(90)
+            time.sleep(1) 
 
             print(f"({computerVision3.pixelsTocm(computerVision3.afwijking()[0])}cm, {computerVision3.pixelsTocm(computerVision3.afwijking()[1])}cm)")
             afwijking = (computerVision3.pixelsTocm(computerVision3.afwijking()[1]), computerVision3.pixelsTocm(computerVision3.afwijking()[0]))
-            newRobot.setVariable("F2", F1 + AbsPos(0,0,0,0,0,0) )
+            newRobot.setVariable("F2", F1 + AbsPos(0,0,0,0,10,0) )
             newRobot.moveTo("F2", True, "P")
-            time.sleep(100) 
-            newRobot.setVariable("F2", F1 + AbsPos((afwijking[0]/abs(afwijking[0]))*50,5*afwijking[1],-100,0,-20,0) )
+            time.sleep(1) 
+            newRobot.setVariable("F2", F1 + AbsPos((afwijking[0]/abs(afwijking[0]+0.000001))*50,10*afwijking[1],-100,0,-20,0) )
             newRobot.moveTo("F2", True, "P")
             time.sleep(1) 
             newRobot.moveTo("F1", True, "P")
@@ -64,9 +70,11 @@ with newRobot:
     
             while not computerVision3.detectingPancake():
                 time.sleep(0.1) 
+                print("Not Detecting Pankake")
 
-
-
+        newRobot.overrideSpeed(90)
+        time.sleep(1) 
+        print('Ready To Flip')
 
         # print(computerVision3.afwijking())
         # print(f"({computerVision3.pixelsTocm(computerVision3.afwijking()[0])}cm, {computerVision3.pixelsTocm(computerVision3.afwijking()[1])}cm)")
