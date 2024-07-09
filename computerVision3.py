@@ -2,6 +2,7 @@ import numpy as np
 import cv2 
 import threading
 import math
+import time
 
 pancakeCenter = (0,0)
 pancakeCords = []
@@ -24,7 +25,7 @@ def thread():
         # [Blue Green Red]
         pannenkoek_rage = [30, 20, 20]
         pr = pannenkoek_rage
-        pannenkoek_color = [170, 205, 205]
+        pannenkoek_color = [140, 197, 205]
         pc = pannenkoek_color
         # pannenkoek_lower = np.array([90, 150, 150]) 
         # pannenkoek_upper = np.array([140, 180, 181]) 
@@ -34,6 +35,7 @@ def thread():
         colorMask = cv2.inRange(blurredImageFrame, pannenkoek_lower, pannenkoek_upper)
         cv2.rectangle(colorMask , (0, 300), (639, 479), 0, -1)
         cv2.rectangle(colorMask , (450, 0), (639, 479), 0, -1)
+        blurredColorMask = cv2.GaussianBlur(colorMask, (13,13), 8)
 
         # redColorMask = cv2.inRange(blurredImageFrame, (0,0,150), (255,255,181))
         # greenColorMask = cv2.inRange(blurredImageFrame, (0,150,0), (255,180,255))
@@ -42,12 +44,12 @@ def thread():
         
         kernel = np.ones((5, 5), "uint8") 
 
-        kerneldColorMask = cv2.dilate(colorMask, kernel) 
+        kerneldColorMask = cv2.dilate(blurredColorMask, kernel) 
         res_red = cv2.bitwise_and(imageFrame, imageFrame, 
-                                mask = colorMask) 
+                                mask = blurredColorMask) 
 
         # Creating contour to track red color 
-        contours, hierarchy = cv2.findContours(colorMask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS) 
+        contours, hierarchy = cv2.findContours(blurredColorMask, cv2.RETR_TREE, cv2.CHAIN_APPROX_TC89_KCOS) 
 
 
         
