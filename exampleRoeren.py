@@ -1,7 +1,5 @@
 from gerrard import *
 import time
-import math
-#import pyautogui
 
 newRobot = Robot("/dev/ttyUSB0")
 
