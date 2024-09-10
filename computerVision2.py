@@ -56,6 +56,7 @@ def thread():
         keypoints = detector.detect(blurredFrame)
         maxSize = 0
         biggestKeypoint = None
+        pancakeCenter = (0,0)
         for keypoint in keypoints:
             center = (round(keypoint.pt[0]), round(keypoint.pt[1]))
             if keypoint.size > maxSize:
