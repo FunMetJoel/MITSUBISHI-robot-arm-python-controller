@@ -85,6 +85,19 @@ class Robot(RobotSerial):
             str|None: The response from the robot controller if wait is True, otherwise None.
         """
         self.executeCommand(f"MOV {mode}{positionVariable}", wait)
+
+    def moveLinearTo(self, positionVariable:str, wait:bool = True, mode:str = "J",) -> Union[str, None]:
+        """Move to a posiotion variable in a linear fasion
+
+        Args:
+            positionVarialbe (str): The name of the position variable
+            mode (str): J or P
+            wait (bool, optional): Whether to wait for a response. Defaults to False
+
+        Returns:
+            str|None: The response from the robot controller if wait is True, otherwise None.
+        """
+        self.executeCommand(f"MVS {mode}{positionVariable}", wait)
     
     def resetError(self, wait:bool = True):
         return self.send("RSTALRM", wait)
@@ -107,7 +120,7 @@ class Robot(RobotSerial):
         return self.executeCommand(f"MVC {start},{point1},{point2}")
     
     def MoveArc(self, pos1, pos2, pos3):
-        return self.executeCommand(f"MVR {pos1}, {pos2}, {pos3}")
+        return self.executeCommand(f"MVR P{pos1}, P{pos2}, P{pos3}")
 
         
     
