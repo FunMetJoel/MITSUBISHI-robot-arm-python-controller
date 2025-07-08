@@ -37,19 +37,19 @@ with newRobot:
 
     
 
-    while True:
-        newRobot.moveLinearTo("H1", True, "P")
-        print("H1")
-        time.sleep(2)
-        newRobot.moveLinearTo("H2", True, "P")
-        print("H2")
-        time.sleep(2)
-        newRobot.moveLinearTo("H3", True, "P")
-        print("H3")
-        time.sleep(2)
-        newRobot.moveLinearTo("H4", True, "P")
-        print("H4")
-        time.sleep(2)
+    # while True:
+    newRobot.moveLinearTo("H1", True, "P")
+    print("H1")
+    time.sleep(2)
+    newRobot.moveLinearTo("H2", True, "P")
+    print("H2")
+    time.sleep(2)
+    newRobot.moveLinearTo("H3", True, "P")
+    print("H3")
+    time.sleep(2)
+    newRobot.moveLinearTo("H4", True, "P")
+    print("H4")
+    time.sleep(2)
 
         
 
@@ -57,4 +57,7 @@ with newRobot:
     time.sleep(0.5)
     newRobot.end()
     newRobot.resetError()
+    newRobot.servoOff()
+    time.sleep(0.5)
+
     
