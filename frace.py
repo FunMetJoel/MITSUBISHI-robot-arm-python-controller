@@ -1,11 +1,13 @@
 import ezdxf
+import ezdxf.units
+import ezdxf.enums
 import logging as log
 from typing import TypeAlias
 import turtle
 import math
 
 #region config
-filePath = "MODELSKETCH_VISIBLE.dxf"
+filePath = "Vierkant2.dxf"
 loggingLevel = log.DEBUG
 #endregion
 
@@ -74,35 +76,108 @@ Elements = []
 log.info(f"Reading {filePath}")
 doc = ezdxf.readfile(filePath)
 
+dxfScale = doc.header.get('$INSUNITS', 1)  # Default to 1 if not specified
+log.info(f"DXF scale is {dxfScale}, which corresponds to unit: {ezdxf.units.unit_name(dxfScale)}")
+log.info(ezdxf.enums.InsertUnits(dxfScale))
+unitConversion  = ezdxf.units.conversion_factor(ezdxf.enums.InsertUnits(dxfScale), ezdxf.enums.InsertUnits.Millimeters)  # Convert to mm
+
+log.info(f"DXF scale is set to {dxfScale}, which corresponds to unit: {doc.header.get('$INSUNITS', 'unknown')}")
+
 log.info(f"\nFound the following items:")
 # Iterate through the entities in the modelspace
 for entity in doc.modelspace().query('*'):
     if entity.dxftype() == 'LINE':
         log.info(f"Line from {entity.dxf.start} to {entity.dxf.end}")
         log.info(entity.dxf.all_existing_dxf_attribs())
+
+        # Convert coordinates to millimeters
+        start = (entity.dxf.start.x * unitConversion, entity.dxf.start.y * unitConversion)
+        end = (entity.dxf.end.x * unitConversion, entity.dxf.end.y * unitConversion)
         Elements.append(
-            Line(entity.dxf.start, entity.dxf.end)
+            Line(start, end)
         )
     
     elif entity.dxftype() == 'CIRCLE':
         log.info(f"Circle at {entity.dxf.center} with radius {entity.dxf.radius}")
         log.info(entity.dxf.all_existing_dxf_attribs())
+        # Convert coordinates to millimeters
+        center = (entity.dxf.center.x * unitConversion, entity.dxf.center.y * unitConversion)
+        radius = entity.dxf.radius * unitConversion  # Convert radius to millimeters
         Elements.append(
-            Circle(entity.dxf.center, entity.dxf.radius)
+            Circle(center, radius)
         )
         
     elif entity.dxftype() == 'ARC':
         log.info(f"Arc at {entity.dxf.center} with radius {entity.dxf.radius}, start angle {entity.dxf.start_angle}, end angle {entity.dxf.end_angle}")
         log.info(entity.dxf.all_existing_dxf_attribs())
+        # Convert coordinates to millimeters
+        center = (entity.dxf.center.x * unitConversion, entity.dxf.center.y * unitConversion)
+        radius = entity.dxf.radius * unitConversion  # Convert radius to millimeters
         Elements.append(
-            Arc(entity.dxf.center, entity.dxf.radius, entity.dxf.start_angle, entity.dxf.end_angle)
+            Arc(center, radius, entity.dxf.start_angle, entity.dxf.end_angle)
         )
-        
-        
+    elif entity.dxftype() == 'LWPOLYLINE':
+        vertices = list(entity.get_points())
+        log.info(f"Polyline with {len(vertices)} vertices")
+        log.info(entity.dxf.all_existing_dxf_attribs())
+        # Convert coordinates to millimeters
+        vertices = [(v[0] * unitConversion, v[1] * unitConversion, v[2] * unitConversion) for v in vertices]
+        Elements.append(entity)
+        log.info(f"Converted vertices: {vertices}")
+
+        # Create line segments between consecutive vertices
+        for i in range(len(vertices) - 1):
+            start_vertex = vertices[i][:2]  # Take only x, y coordinates
+            end_vertex = vertices[i + 1][:2]  # Take only x, y coordinates
+            Elements.append(Line(start_vertex, end_vertex))
+
+        # Handle closed polylines
+        if entity.closed:
+            start_vertex = vertices[-1][:2]
+            end_vertex = vertices[0][:2]
+            Elements.append(Line(start_vertex, end_vertex))
+
     else:
         log.warning(f"Unknown Entity type: {entity.dxftype()} with data: {entity.dxf}")
 
 #endregion
+
+#region centering
+
+centeredElements: list[DXFclass] = []
+
+minX = min(element.bounds()[0][0] for element in Elements)
+maxX = max(element.bounds()[1][0] for element in Elements)
+minY = min(element.bounds()[0][1] for element in Elements)
+maxY = max(element.bounds()[1][1] for element in Elements)
+
+# goal: minX = maxX and minY = maxY
+centerX = (minX + maxX) / 2
+centerY = (minY + maxY) / 2
+
+for element in Elements:
+    if isinstance(element, Line):
+        # Center the line by adjusting start and end points
+        new_start = (element.start[0] - centerX, element.start[1] - centerY)
+        new_end = (element.end[0] - centerX, element.end[1] - centerY)
+        centeredElements.append(Line(new_start, new_end))
+        
+    elif isinstance(element, Circle):
+        # Center the circle by adjusting its center
+        new_center = (element.center[0] - centerX, element.center[1] - centerY)
+        centeredElements.append(Circle(new_center, element.radius))
+        
+    elif isinstance(element, Arc):
+        # Center the arc by adjusting its center
+        new_center = (element.center[0] - centerX, element.center[1] - centerY)
+        centeredElements.append(Arc(new_center, element.radius, element.startAngle, element.endAngle))
+        
+    else:
+        log.warning(f"Unknown Element type: {type(element)}")
+        
+Elements = centeredElements
+
+#endregion centering
 
 #region optimalisation
 
@@ -154,7 +229,8 @@ Elements = SortedElements
 #endregion
 
 #region TurtleSimulation
-turtle.setworldcoordinates(-10, -10, 10, 10)
+turtle.setup(width=800, height=800)
+turtle.setworldcoordinates(-50, -50, 50, 50)
 
 def turtleUp():
     turtle.color(1, 0, 0)
