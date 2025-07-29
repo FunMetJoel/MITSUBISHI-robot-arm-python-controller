@@ -9,7 +9,7 @@ from gerrard import *
 import time
 
 #region config
-filePath = "House.dxf"
+filePath = "VierkantMetRondjeEnPunt.dxf"
 loggingLevel = log.DEBUG
 #endregion
 
@@ -78,19 +78,20 @@ Elements = []
 log.info(f"Reading {filePath}")
 doc = ezdxf.readfile(filePath)
 
-dxfScale = doc.header.get('$INSUNITS', 1)  # Default to 1 if not specified
+dxfScale = doc.header.get('$INSUNITS', ezdxf.enums.InsertUnits.Millimeters)  # Default to 1 if not specified
 log.info(f"DXF scale is {dxfScale}, which corresponds to unit: {ezdxf.units.unit_name(dxfScale)}")
 log.info(ezdxf.enums.InsertUnits(dxfScale))
-unitConversion  = ezdxf.units.conversion_factor(ezdxf.enums.InsertUnits(dxfScale), ezdxf.enums.InsertUnits.Millimeters)  # Convert to mm
+unitConversion  = ezdxf.units.conversion_factor(ezdxf.enums.InsertUnits(dxfScale), ezdxf.enums.InsertUnits.Millimeters) * 10 # Convert to mm
 
 log.info(f"DXF scale is set to {dxfScale}, which corresponds to unit: {doc.header.get('$INSUNITS', 'unknown')}")
+log.info(f"Unit conversion factor to millimeters is {unitConversion}")
 
 log.info(f"\nFound the following items:")
 # Iterate through the entities in the modelspace
 for entity in doc.modelspace().query('*'):
     if entity.dxftype() == 'LINE':
         log.info(f"Line from {entity.dxf.start} to {entity.dxf.end}")
-        log.info(entity.dxf.all_existing_dxf_attribs())
+        log.debug(entity.dxf.all_existing_dxf_attribs())
 
         # Convert coordinates to millimeters
         start = (entity.dxf.start.x * unitConversion, entity.dxf.start.y * unitConversion)
@@ -101,7 +102,7 @@ for entity in doc.modelspace().query('*'):
     
     elif entity.dxftype() == 'CIRCLE':
         log.info(f"Circle at {entity.dxf.center} with radius {entity.dxf.radius}")
-        log.info(entity.dxf.all_existing_dxf_attribs())
+        log.debug(entity.dxf.all_existing_dxf_attribs())
         # Convert coordinates to millimeters
         center = (entity.dxf.center.x * unitConversion, entity.dxf.center.y * unitConversion)
         radius = entity.dxf.radius * unitConversion  # Convert radius to millimeters
@@ -111,7 +112,7 @@ for entity in doc.modelspace().query('*'):
         
     elif entity.dxftype() == 'ARC':
         log.info(f"Arc at {entity.dxf.center} with radius {entity.dxf.radius}, start angle {entity.dxf.start_angle}, end angle {entity.dxf.end_angle}")
-        log.info(entity.dxf.all_existing_dxf_attribs())
+        log.debug(entity.dxf.all_existing_dxf_attribs())
         # Convert coordinates to millimeters
         center = (entity.dxf.center.x * unitConversion, entity.dxf.center.y * unitConversion)
         radius = entity.dxf.radius * unitConversion  # Convert radius to millimeters
@@ -121,7 +122,7 @@ for entity in doc.modelspace().query('*'):
     elif entity.dxftype() == 'LWPOLYLINE':
         vertices = list(entity.get_points())
         log.info(f"Polyline with {len(vertices)} vertices")
-        log.info(entity.dxf.all_existing_dxf_attribs())
+        log.debug(entity.dxf.all_existing_dxf_attribs())
         # Convert coordinates to millimeters
         vertices = [(v[0] * unitConversion, v[1] * unitConversion, v[2] * unitConversion) for v in vertices]
         Elements.append(entity)
@@ -271,10 +272,12 @@ turtle.mainloop()
 #endregion
 
 #region Frace
-fraceSpeed = 5
-zeroPosition = AbsPos(570,0,302.5,180,0,180) # 420
-upvector = AbsPos(0,0,20,0,0,0)
-downvector = AbsPos(0,0,-20,0,0,0)
+log.debug("Setting up fracing parameters...")
+fraceSpeed = 0.5
+notFraceSpeed = 20
+zeroPosition = AbsPos(570,0,312.5,180,0,180) # 420
+upvector = AbsPos(0,0,-83,0,0,0)
+downvector = AbsPos(0,0,-105,0,0,0)
 bounds:pointPair = (
     (
         min(element.bounds()[0][0] for element in Elements),
@@ -285,6 +288,7 @@ bounds:pointPair = (
         max(element.bounds()[1][1] for element in Elements)
     )
 )
+log.debug(f"Bounds: {bounds}")
 
 robotBoundCorners: tuple[AbsPos, AbsPos, AbsPos, AbsPos] = (
     AbsPos(bounds[0][0], bounds[0][1], 0, 0, 0, 0),
@@ -293,17 +297,20 @@ robotBoundCorners: tuple[AbsPos, AbsPos, AbsPos, AbsPos] = (
     AbsPos(bounds[0][0], bounds[1][1], 0, 0, 0, 0)
 )
 
+log.debug(f"Robot bound corners: {robotBoundCorners}")
 
+log.debug("Setting up robot arm...")
 arm = Robot(
     port="/dev/ttyUSB0"
 )
+log.debug(f"Connecting to robot...")
 arm.connect()
 
 with arm:
     #ARM setup
     arm.end()
     arm.resetError()
-    arm.overrideSpeed(10)
+    arm.overrideSpeed(notFraceSpeed)
     arm.executeCommand("SPD M_NSPD", True)
     arm.setVariable("HOME", zeroPosition + upvector)
     arm.setVariable("ZERO", zeroPosition)
@@ -312,46 +319,51 @@ with arm:
     
     arm.moveTo("HOME", True, "P")
     input("Press Enter to show bounds...")
-    arm.overrideSpeed(80)
     
     # Show bounds
     for corner in robotBoundCorners:
         arm.setVariable("Corner", corner + zeroPosition + upvector)
+        log.debug(f"Moving to corner: {corner + zeroPosition + upvector}")
         arm.moveTo("Corner", True, "P")
-        time.sleep(3)
+        time.sleep(2)
         
     arm.moveTo("HOME", True, "P")
         
     input("Press Enter to start fracing...")
     
-    lastPosition:AbsPos = zeroPosition + upvector
+    lastPosition:AbsPos = zeroPosition
     
     for element in Elements:
         if isinstance(element, Line):
             start = AbsPos(element.start[0], element.start[1], 0, 0, 0, 0)
             end = AbsPos(element.end[0], element.end[1], 0, 0, 0, 0)
 
-            if lastPosition != start + downvector:
-                log.debug(f"Not at correct position, moving up and then to start position: {start} from {lastPosition}")
+            if lastPosition != start:
+                log.info(f"Not at correct position, moving up and then to start position: {start} from {lastPosition}")
+                log.debug(f"Moving to last position: {lastPosition + upvector}")
                 arm.setVariable("Up", lastPosition + upvector)
+                time.sleep(0.2)
+                log.debug(f"Moving up")
                 arm.moveTo("Up", True, "P")
-                time.sleep(1)
-                arm.overrideSpeed(80)
-                arm.setVariable("StartUp", start + upvector)
+                time.sleep(4)
+                arm.overrideSpeed(notFraceSpeed)
+                arm.setVariable("StartUp", start + zeroPosition + upvector)
+                time.sleep(0.2)
                 arm.moveTo("StartUp", True, "P")
                 time.sleep(1)
             
-            arm.overrideSpeed(fraceSpeed)
-            log.debug(f"Moving down")
-            arm.setVariable("P1", start + downvector)
-            arm.moveTo("P1", True, "P")
-            time.sleep(1)
-            log.debug(f"Moving to end position: {end}")
-            arm.setVariable("P2", end + downvector)
+                arm.overrideSpeed(fraceSpeed)
+                log.debug(f"Moving down")
+                arm.setVariable("P1", start + zeroPosition + downvector)
+                arm.moveTo("P1", True, "P")
+                time.sleep(3)
+
+            log.debug(f"Moving to end position: {end}, {end + zeroPosition + downvector}")
+            arm.setVariable("P2", end + zeroPosition + downvector)
             arm.moveTo("P2", True, "P")
-            time.sleep(5)
+            time.sleep(20)
             
-            lastPosition = end + downvector
+            lastPosition = end + zeroPosition
             
             
         elif isinstance(element, Circle):
@@ -360,7 +372,72 @@ with arm:
             
             startPosition = center + AbsPos(radius, 0, 0, 0, 0, 0)
 
+            points = []
+            for i in range(3):
+                angle = 2 * math.pi * i / 3  # Divide the circle into three equal parts
+                x = radius * math.cos(angle)
+                y = radius * math.sin(angle)
+                points.append(AbsPos(x, y, 0, 0, 0, 0))
 
+            log.info(f"Processing Circle at {center} with radius {radius}")
+            start = points[0]
+            mid = points[1]
+            end = points[2]
+            log.info(f"Start: {start}, Mid: {mid}, End: {end}")
 
+            if lastPosition != start:
+                log.info(f"Not at correct position, moving up and then to start position: {start} from {lastPosition}")
+                log.debug(f"Moving to last position: {lastPosition + upvector}")
+                arm.setVariable("Up", lastPosition + upvector)
+                time.sleep(0.2)
+                log.debug(f"Moving up")
+                arm.moveTo("Up", True, "P")
+                time.sleep(3)
+                arm.overrideSpeed(notFraceSpeed)
+                arm.setVariable("StartUp", start + zeroPosition + upvector)
+                time.sleep(0.2)
+                arm.moveTo("StartUp", True, "P")
+                time.sleep(1)
+            
 
+            arm.setVariable("L1", start + zeroPosition + downvector)
+            time.sleep(0.2)
+            arm.setVariable("LU1", start + zeroPosition + upvector)
+            time.sleep(0.2)
+            arm.setVariable("L2", mid + zeroPosition + downvector)
+            time.sleep(0.2)
+            arm.setVariable("LU2", mid + zeroPosition + upvector)
+            time.sleep(0.2)
+            arm.setVariable("L3", end + zeroPosition + downvector)
+            time.sleep(0.2)
+            arm.setVariable("LU3", end + zeroPosition + upvector)
+            time.sleep(0.2)
+
+            arm.overrideSpeed(fraceSpeed)
+            arm.moveLinearTo("L1", True, "P")
+            time.sleep(5)
+
+            arm.executeCommand(f"MVC PL1, PL2, PL3", True)
+            print("Moving in circle")
+            time.sleep(30)
+
+            lastPosition = start + zeroPosition
+
+    log.info(f"Moving home after fracing")
+    log.debug(f"Moving to last position: {lastPosition + upvector}")
+    arm.setVariable("Up", lastPosition + upvector)
+    time.sleep(0.2)
+    log.debug(f"Moving up")
+    arm.moveTo("Up", True, "P")
+    time.sleep(5)
+    arm.overrideSpeed(notFraceSpeed)
+    
+    arm.moveTo("HOME", True, "P")
+    time.sleep(1)
+
+    arm.servoOff()
+    arm.end()
+    arm.resetError()
+    log.info("Fracing completed successfully.")
+    log.info("Robot disconnected.")
 #endregion
