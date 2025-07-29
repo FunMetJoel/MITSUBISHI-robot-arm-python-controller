@@ -5,9 +5,11 @@ import logging as log
 from typing import TypeAlias
 import turtle
 import math
+from gerrard import *
+import time
 
 #region config
-filePath = "Vierkant2.dxf"
+filePath = "House.dxf"
 loggingLevel = log.DEBUG
 #endregion
 
@@ -197,6 +199,7 @@ while len(UnsortedElements) > 0:
             distance1 = math.sqrt(((lastPosition[0]-UnsortedElement.end[0])**2)+((lastPosition[1]-UnsortedElement.end[1])**2)+0.000000001)
             distance2 = math.sqrt(((lastPosition[0]-UnsortedElement.start[0])**2)+((lastPosition[1]-UnsortedElement.start[1])**2)+0.000000001)
             distance = min(distance1, distance2)
+            log.debug(f"Distance to {UnsortedElement} is {distance} (start: {distance1}, end: {distance2})")
             
             if distance == distance1:
                 UnsortedElement.reverse = True
@@ -223,6 +226,12 @@ while len(UnsortedElements) > 0:
             minElement.end = end
             minElement.start = start
             minElement.reverse = False
+            
+        lastPosition = minElement.end
+    elif isinstance(minElement, Circle):
+        lastPosition = minElement.center
+    elif isinstance(minElement, Arc):
+        lastPosition = minElement.center
     
 Elements = SortedElements
 
@@ -230,7 +239,7 @@ Elements = SortedElements
 
 #region TurtleSimulation
 turtle.setup(width=800, height=800)
-turtle.setworldcoordinates(-50, -50, 50, 50)
+turtle.setworldcoordinates(-100, -100, 100, 100)
 
 def turtleUp():
     turtle.color(1, 0, 0)
@@ -259,4 +268,99 @@ for element in Elements:
         log.error("Arc not implemented")
         
 turtle.mainloop()
+#endregion
+
+#region Frace
+fraceSpeed = 5
+zeroPosition = AbsPos(570,0,302.5,180,0,180) # 420
+upvector = AbsPos(0,0,20,0,0,0)
+downvector = AbsPos(0,0,-20,0,0,0)
+bounds:pointPair = (
+    (
+        min(element.bounds()[0][0] for element in Elements),
+        min(element.bounds()[0][1] for element in Elements)
+    ),
+    (
+        max(element.bounds()[1][0] for element in Elements),
+        max(element.bounds()[1][1] for element in Elements)
+    )
+)
+
+robotBoundCorners: tuple[AbsPos, AbsPos, AbsPos, AbsPos] = (
+    AbsPos(bounds[0][0], bounds[0][1], 0, 0, 0, 0),
+    AbsPos(bounds[1][0], bounds[0][1], 0, 0, 0, 0),
+    AbsPos(bounds[1][0], bounds[1][1], 0, 0, 0, 0),
+    AbsPos(bounds[0][0], bounds[1][1], 0, 0, 0, 0)
+)
+
+
+arm = Robot(
+    port="/dev/ttyUSB0"
+)
+arm.connect()
+
+with arm:
+    #ARM setup
+    arm.end()
+    arm.resetError()
+    arm.overrideSpeed(10)
+    arm.executeCommand("SPD M_NSPD", True)
+    arm.setVariable("HOME", zeroPosition + upvector)
+    arm.setVariable("ZERO", zeroPosition)
+    arm.servoOn()
+    time.sleep(1.5)
+    
+    arm.moveTo("HOME", True, "P")
+    input("Press Enter to show bounds...")
+    arm.overrideSpeed(80)
+    
+    # Show bounds
+    for corner in robotBoundCorners:
+        arm.setVariable("Corner", corner + zeroPosition + upvector)
+        arm.moveTo("Corner", True, "P")
+        time.sleep(3)
+        
+    arm.moveTo("HOME", True, "P")
+        
+    input("Press Enter to start fracing...")
+    
+    lastPosition:AbsPos = zeroPosition + upvector
+    
+    for element in Elements:
+        if isinstance(element, Line):
+            start = AbsPos(element.start[0], element.start[1], 0, 0, 0, 0)
+            end = AbsPos(element.end[0], element.end[1], 0, 0, 0, 0)
+
+            if lastPosition != start + downvector:
+                log.debug(f"Not at correct position, moving up and then to start position: {start} from {lastPosition}")
+                arm.setVariable("Up", lastPosition + upvector)
+                arm.moveTo("Up", True, "P")
+                time.sleep(1)
+                arm.overrideSpeed(80)
+                arm.setVariable("StartUp", start + upvector)
+                arm.moveTo("StartUp", True, "P")
+                time.sleep(1)
+            
+            arm.overrideSpeed(fraceSpeed)
+            log.debug(f"Moving down")
+            arm.setVariable("P1", start + downvector)
+            arm.moveTo("P1", True, "P")
+            time.sleep(1)
+            log.debug(f"Moving to end position: {end}")
+            arm.setVariable("P2", end + downvector)
+            arm.moveTo("P2", True, "P")
+            time.sleep(5)
+            
+            lastPosition = end + downvector
+            
+            
+        elif isinstance(element, Circle):
+            center = AbsPos(element.center[0], element.center[1], 0, 0, 0, 0)
+            radius = element.radius
+            
+            startPosition = center + AbsPos(radius, 0, 0, 0, 0, 0)
+
+
+
+
 #endregion
